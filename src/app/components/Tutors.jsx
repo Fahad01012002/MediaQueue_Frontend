@@ -1,78 +1,187 @@
 'use client'
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useMemo } from "react";
+import { Filter, BookOpen, Clock, Star, MapPin, Search } from "lucide-react";
 
-import * as Dialog from '@radix-ui/react-dialog';
-import { AlertTriangle, Loader2, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { deleteMyTutor } from '../lib/action';
-import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
+const Tutors = ({ tutor }) => {
 
-const DeleteModule = ({ id }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
-    const router = useRouter();
+    const filteredTutors = useMemo(() => {
+        return tutor.filter(tutor => {
+            const matchName = tutor.name.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const [deleteOpen, setDeleteOpen] = useState(false);
-    const [deleting, setDeleting] = useState(false);
-
-    const handleDeleteConfirm = async () => {
-        setDeleting(true);
-        try {
-            const result = await deleteMyTutor(id);
-            if (result.success) {
-                toast.success('Deleted Successfully');
-            } else {
-                toast.error('Something went wrong');
+            let matchDate = true;
+            if (startDate || endDate) {
+                const tDate = new Date(tutor.sessionStartDate);
+                if (startDate) matchDate = matchDate && tDate >= new Date(startDate);
+                if (endDate) matchDate = matchDate && tDate <= new Date(endDate);
             }
-            router.refresh();
-        } finally {
-            setDeleting(false);
-        }
-    }
+
+            return matchName && matchDate;
+        });
+    }, [tutor, searchTerm, startDate, endDate]);
 
     return (
-        <div>
-            <Dialog.Root open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <Dialog.Trigger asChild>
-                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800 text-red-600 dark:text-red-400 transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                </Dialog.Trigger>
+        <div className="space-y-8 p-6 w-11/12 mx-auto">
 
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-100 -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl z-50 outline-none p-6 text-center bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
-                        <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
-                            <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-500" />
+            {/* Header */}
+            <div className="mt-10">
+                <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">
+                    Available Tutors
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400">
+                    Find the perfect match for your educational needs.
+                </p>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="p-6 rounded-xl border shadow-sm bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    {/* Search */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Search by Name
+                        </label>
+
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="e.g. Robert Smith"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 rounded-lg border bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                            />
                         </div>
-                        <Dialog.Title className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
-                            Delete Tutor
-                        </Dialog.Title>
-                        <Dialog.Description className="mb-8 text-slate-500 dark:text-slate-400">
-                            Are you sure? This action cannot be undone and will permanently remove this listing.
-                        </Dialog.Description>
-                        <div className="flex gap-3 justify-center">
-                            <Dialog.Close asChild>
-                                <button className="px-5 py-2.5 rounded-xl font-medium flex-1 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-zinc-700">
-                                    Cancel
-                                </button>
-                            </Dialog.Close>
-                            <button
-                                onClick={async () => {
-                                    await handleDeleteConfirm();
-                                    setDeleteOpen(false);
-                                }}
-                                disabled={deleting}
-                                className="px-5 py-2.5 rounded-xl font-medium bg-red-600 text-white hover:bg-red-700 flex-1 shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
-                            >
-                                {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
-                                Yes, Delete
-                            </button>
+                    </div>
+
+                    {/* From Date */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Session Start (From)
+                        </label>
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="w-full px-4 py-2 rounded-lg border bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                        />
+                    </div>
+
+                    {/* To Date */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                            Session Start (To)
+                        </label>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="w-full px-4 py-2 rounded-lg border bg-slate-50 dark:bg-zinc-800 border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                        />
+                    </div>
+
+                </div>
+            </div>
+
+            {/* No Result */}
+            {filteredTutors.length === 0 ? (
+                <div className="text-center py-20 rounded-xl border bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800">
+                    <Filter className="w-12 h-12 mx-auto mb-4 text-slate-300 dark:text-zinc-600" />
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                        No tutors found
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-400">
+                        Try adjusting your search or filters.
+                    </p>
+                </div>
+            ) : (
+
+                /* Cards */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    {filteredTutors.map((tutor) => (
+                        <div
+                            key={tutor._id}
+                            className="rounded-xl overflow-hidden border shadow-sm bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800"
+                        >
+
+                            {/* Image */}
+                            <div className="h-56 relative overflow-hidden">
+                                <Image
+                                    src={tutor.photoUrl}
+                                    alt={tutor.name}
+                                    width={400}
+                                    height={300}
+                                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                                />
+
+                                <div className="absolute top-3 right-3 bg-white/90 dark:bg-zinc-800/90 px-3 py-1 rounded-full text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                                    <Star className="w-3 h-3" />
+                                    {tutor.subject}
+                                </div>
+
+                                <div className="absolute bottom-3 left-3 bg-black/60 px-3 py-1 rounded-full text-xs text-white flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {tutor.teachingMode}
+                                </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-6 space-y-4">
+
+                                <div className="flex justify-between items-start">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                        {tutor.name}
+                                    </h3>
+
+                                    <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                                        ${tutor.hourlyFee}
+                                        <span className="text-xs text-slate-500">/hr</span>
+                                    </span>
+                                </div>
+
+                                <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                    <BookOpen className="w-4 h-4" />
+                                    {tutor.institution}
+                                </p>
+
+                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                                    <Clock className="w-4 h-4 text-indigo-500" />
+                                    {tutor.availableDays} ({tutor.timeSlot})
+                                </div>
+
+                                <div className="flex justify-between items-center p-3 rounded-lg border bg-slate-50 dark:bg-zinc-800 border-slate-100 dark:border-zinc-700">
+                                    <span className="text-xs font-bold uppercase text-slate-500">
+                                        Slots
+                                    </span>
+
+                                    <span className={`font-bold ${tutor.totalSlot === 0 ? "text-red-500" : "text-emerald-500"}`}>
+                                        {tutor.totalSlot === 0 ? "Full" : tutor.totalSlot}
+                                    </span>
+                                </div>
+
+                                <Link
+                                    href={`/tutors/${tutor._id}`}
+                                    className="block text-center py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition font-semibold"
+                                >
+                                    Book Session
+                                </Link>
+
+                            </div>
                         </div>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+                    ))}
+
+                </div>
+            )}
+
         </div>
     );
 };
 
-export default DeleteModule;
+export default Tutors;
