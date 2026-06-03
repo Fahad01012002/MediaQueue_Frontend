@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+🚀 My App
 
-## Getting Started
+Live Site: https://mediaque-client.vercel.app
 
-First, run the development server:
+📌 About This Project
 
-```bash
+My App is a modern full-stack web application built with Next.js, MongoDB, and a powerful UI stack. It is designed to be fast, responsive, and scalable with a clean user experience.
+
+✨ Features
+⚡ Built with Next.js 16 for high performance and SSR support
+🎨 Modern UI using HeroUI, Radix UI, and Tailwind CSS
+🔐 Authentication system powered by Better Auth + MongoDB
+💬 Real-time notifications using Sonner & React Toastify
+🎭 Smooth animations with Framer Motion
+📱 Fully responsive design for mobile, tablet, and desktop
+🌙 Dark/Light mode support using next-themes
+🧩 Modular and reusable component architecture
+
+
+🛠️ Tech Stack
+Next.js
+React
+MongoDB
+Tailwind CSS
+Better Auth
+Framer Motion
+Radix UI
+
+
+🚀 Getting Started
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+🌐 Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is deployed on:
 
-## Learn More
+👉 Live URL: https://mediaque-client.vercel.app
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🤝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pull requests are welcome. For major changes, please open an issue first.
 
-## Deploy on Vercel
+📄 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-source and available under the MIT License.
